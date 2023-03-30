@@ -22,6 +22,7 @@ add_executable(logid
         features/RemapButton.cpp
         features/DeviceStatus.cpp
         features/ThumbWheel.cpp
+        features/KeyDescriptions.cpp
         actions/Action.cpp
         actions/NullAction.cpp
         actions/KeypressAction.cpp
@@ -68,6 +69,7 @@ add_executable(logid
         util/worker_thread.cpp
         util/task.cpp
         util/thread.cpp
+        util/separator.cpp
         util/ExceptionHandler.cpp)
 
 set_target_properties(logid PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

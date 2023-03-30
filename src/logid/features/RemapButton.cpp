@@ -19,6 +19,8 @@
 #include "../Device.h"
 #include "RemapButton.h"
 #include "../backend/hidpp20/Error.h"
+#include "KeyDescriptions.h"
+#include "../util/separator.h"
 
 using namespace logid::features;
 using namespace logid::backend;
@@ -41,21 +43,31 @@ RemapButton::RemapButton(Device *dev): DeviceFeature(dev), _config (dev)
     _reprog_controls->initCidMap();
 
     if(global_loglevel <= DEBUG) {
+        #define DESCRIPTION_LEN = 10
         #define FLAG(x) control.second.flags & hidpp20::ReprogControls::x ? \
             "YES" : ""
         #define ADDITIONAL_FLAG(x) control.second.additionalFlags & \
             hidpp20::ReprogControls::x ? "YES" : ""
 
-        // Print CIDs, originally by zv0n
-        logPrintf(DEBUG,  "%s:%d remappable buttons:",
+        std::vector<int> columnWidths = {5, 26, 14, 5, 7, 9, 20};
+
+        logPrintf(DEBUG, "%s:%d remappable buttons:",
                 dev->hidpp20().devicePath().c_str(),
                 dev->hidpp20().deviceIndex());
-        logPrintf(DEBUG, "CID  | reprog? | fn key? | mouse key? | "
-                         "gesture support?");
-        for(const auto & control : _reprog_controls->getControls())
-                logPrintf(DEBUG, "0x%02x | %-7s | %-7s | %-10s | %s",
-                        control.first, FLAG(TemporaryDivertable), FLAG(FKey),
-                        FLAG(MouseButton), ADDITIONAL_FLAG(RawXY));
+        logPrintf(DEBUG, getSeparator(columnWidths));
+        logPrintf(DEBUG, "CID  | %-24s | Programmable | Fn  | Mouse | Gesture | Comment",
+                "Function");
+        logPrintf(DEBUG, getSeparator(columnWidths));
+
+        for(const auto & control : _reprog_controls->getControls()) {
+                logPrintf(DEBUG, "0x%02x | %-24s | %-12s | %-3s | %-5s | %-7s | %s",
+                        control.first, get_key_description(control.first),
+                        FLAG(TemporaryDivertable), FLAG(FKey),
+                        FLAG(MouseButton), ADDITIONAL_FLAG(RawXY), get_key_comment(control.first));
+        }
+        logPrintf(DEBUG, getSeparator(columnWidths));
+        logPrintf(DEBUG, "");
+
         #undef FLAG
     }
 }

@@ -19,6 +19,7 @@
 #include "ThumbWheel.h"
 #include "../Device.h"
 #include "../actions/gesture/AxisGesture.h"
+#include "../util/separator.h"
 
 using namespace logid::features;
 using namespace logid::backend;
@@ -37,15 +38,20 @@ ThumbWheel::ThumbWheel(Device *dev) : DeviceFeature(dev), _wheel_info(),
     } catch(hidpp20::UnsupportedFeature& e) {
         throw UnsupportedFeature();
     }
-
+    
     _wheel_info = _thumb_wheel->getInfo();
+    std::vector<int> columnWidths = {10, 7, 11, 12};
 
     logPrintf(DEBUG,"Thumb wheel detected (0x2150), capabilities:");
-    logPrintf(DEBUG, "timestamp | touch | proximity | single tap");
+    logPrintf(DEBUG, getSeparator(columnWidths));
+    logPrintf(DEBUG, "Timestamp | Touch | Proximity | Single tap");
+    logPrintf(DEBUG, getSeparator(columnWidths));
     logPrintf(DEBUG, "%-9s | %-5s | %-9s | %-10s", FLAG_STR(Timestamp),
               FLAG_STR(Touch), FLAG_STR(Proxy), FLAG_STR(SingleTap));
+    logPrintf(DEBUG, getSeparator(columnWidths));
     logPrintf(DEBUG, "Thumb wheel resolution: native (%d), diverted (%d)",
               _wheel_info.nativeRes, _wheel_info.divertedRes);
+    logPrintf(DEBUG, "");
 
     if(_config.leftAction()) {
         try {
